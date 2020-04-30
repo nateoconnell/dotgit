@@ -32,6 +32,9 @@ set foldmethod=marker
 " Set appropriate text colors for dark background
 set background=dark
 
+" Turn off search string highlighting
+set nohlsearch
+
 " }}}
 " STATUSLINE {{{1
 "Enable statusline always with laststatus=2
