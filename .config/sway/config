@@ -198,9 +198,9 @@ bindsym $mod+r mode "resize"
 #
 # Custom:
 #
-bindsym XF86AudioRaiseVolume exec amixer sset Master unmute 5%+
-bindsym XF86AudioLowerVolume exec amixer sset Master unmute 5%-
-bindsym XF86AudioMute exec amixer sset Master toggle
+bindsym XF86AudioRaiseVolume exec amixer sset Master unmute 5%+ && pkill -USR1 i3status
+bindsym XF86AudioLowerVolume exec amixer sset Master unmute 5%- && pkill -USR1 i3status
+bindsym XF86AudioMute exec amixer sset Master toggle && pkill -USR1 i3status
 bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
 bindsym XF86MonBrightnessUp exec brightnessctl set +5%
 bindsym XF86AudioPlay exec playerctl play-pause
@@ -212,7 +212,7 @@ bindsym XF86AudioPrev exec playerctl previous
 #
 # Read `man 5 sway-bar` for more information about this section.
 bar {
-    position top
+    position bottom
 
     # When the status_command prints a new line to stdout, swaybar updates.
     # The default just shows the current date and time.
