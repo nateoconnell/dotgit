@@ -9,3 +9,6 @@ alias ls='ls --color=auto'
 alias ll='ls -lh'
 alias dotgit='/usr/bin/git --git-dir=$HOME/.dotgit.git --work-tree=$HOME'
 PS1='[\u@\h \W]\$ '
+
+export EDITOR=vim
+export VISUAL=vim
