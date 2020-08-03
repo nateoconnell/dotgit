@@ -226,4 +226,9 @@ bar {
     }
 }
 
+### Startup actions
+#
+# Set sane brightness value
+exec brightnessctl set 30%
+
 include /etc/sway/config.d/*
