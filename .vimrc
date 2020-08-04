@@ -413,8 +413,8 @@ augroup END
 " }}}
 " }}}
 " ABBREVIATIONS {{{1 
-iabbrev sig Thank you,<CR>Nate O'Connell<CR>Linux Administrator
-iabbrev nsig [1]. <++><CR><CR><CR>Thank you,<CR>Nate O'Connell<CR>Linux Administrator<CR><CR><CR>[1]
+iabbrev sig Thank you,<CR>Nate O'Connell<CR>Linux Support Engineer
+iabbrev nsig [1]. <++><CR><CR><CR>Thank you,<CR>Nate O'Connell<CR>Linux Support Engineer<CR><CR><CR>[1]
 
 " Use the <C-K> digraph functionality to insert the { and } characters without
 "  actually creating the folds in this file: <C-K> (! = { and <C-K> !) = } in
