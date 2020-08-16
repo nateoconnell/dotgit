@@ -19,12 +19,17 @@ set $term alacritty -e tmux new -As main
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
 set $menu dmenu_path | dmenu | xargs swaymsg exec --
+# Default gap values
+set $inner_gaps 10
+set $outer_gaps 0
 
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
 output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
-gaps inner 10
+# Default gaps and minimal border
+gaps inner $inner_gaps
+gaps outer $outer_gaps
 default_border pixel 2
 #
 # Example configuration:
@@ -100,15 +105,15 @@ exec swayidle -w \
     bindsym $mod+Right focus right
 
     # Move the focused window with the same, but add Shift
-    bindsym $mod+Shift+$left move left
-    bindsym $mod+Shift+$down move down
-    bindsym $mod+Shift+$up move up
-    bindsym $mod+Shift+$right move right
+    bindsym $mod+Shift+$left move left 30
+    bindsym $mod+Shift+$down move down 30
+    bindsym $mod+Shift+$up move up 30
+    bindsym $mod+Shift+$right move right 30
     # Ditto, with arrow keys
-    bindsym $mod+Shift+Left move left
-    bindsym $mod+Shift+Down move down
-    bindsym $mod+Shift+Up move up
-    bindsym $mod+Shift+Right move right
+    bindsym $mod+Shift+Left move left 30
+    bindsym $mod+Shift+Down move down 30
+    bindsym $mod+Shift+Up move up 30
+    bindsym $mod+Shift+Right move right 30
 #
 # Workspaces:
 #
@@ -139,6 +144,16 @@ exec swayidle -w \
 #
 # Layout stuff:
 #
+    # Enable/disable gaps
+    bindsym $mod+g gaps inner current set $inner_gaps; gaps outer current set $outer_gaps
+    bindsym $mod+Shift+g gaps inner current set 0; gaps outer current set 0
+    # Increase/decrease inner gaps
+    bindsym $mod+t gaps inner current plus 5
+    bindsym $mod+Shift+t gaps inner current minus 5
+    # Increase/decrease outer gaps
+    bindsym $mod+r gaps outer current plus 5
+    bindsym $mod+Shift+r gaps outer current minus 5
+
     # You can "split" the current object of your focus with
     # $mod+b or $mod+v, for horizontal and vertical splits
     # respectively.
@@ -176,27 +191,35 @@ exec swayidle -w \
 #
 # Resizing containers:
 #
-mode "resize" {
-    # left will shrink the containers width
-    # right will grow the containers width
-    # up will shrink the containers height
-    # down will grow the containers height
-    bindsym $left resize shrink width 10px
-    bindsym $down resize grow height 10px
-    bindsym $up resize shrink height 10px
-    bindsym $right resize grow width 10px
-
-    # Ditto, with arrow keys
-    bindsym Left resize shrink width 10px
-    bindsym Down resize grow height 10px
-    bindsym Up resize shrink height 10px
-    bindsym Right resize grow width 10px
-
-    # Return to default mode
-    bindsym Return mode "default"
-    bindsym Escape mode "default"
-}
-bindsym $mod+r mode "resize"
+#mode "resize" {
+#    # left will shrink the containers width
+#    # right will grow the containers width
+#    # up will shrink the containers height
+#    # down will grow the containers height
+#    bindsym $left resize shrink width 10px
+#    bindsym $down resize grow height 10px
+#    bindsym $up resize shrink height 10px
+#    bindsym $right resize grow width 10px
+#
+#    # Ditto, with arrow keys
+#    bindsym Left resize shrink width 10px
+#    bindsym Down resize grow height 10px
+#    bindsym Up resize shrink height 10px
+#    bindsym Right resize grow width 10px
+#
+#    # Return to default mode
+#    bindsym Return mode "default"
+#    bindsym Escape mode "default"
+#}
+#bindsym $mod+r mode "resize"
+bindsym $mod+y resize shrink width 10px
+bindsym $mod+u resize grow height 10px
+bindsym $mod+i resize shrink height 10px
+bindsym $mod+o resize grow width 10px
+bindsym $mod+Shift+y resize shrink width 20px
+bindsym $mod+Shift+u resize grow height 20px
+bindsym $mod+Shift+i resize shrink height 20px
+bindsym $mod+Shift+o resize grow width 20px
 #
 # Custom:
 #
