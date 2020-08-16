@@ -231,6 +231,8 @@ bindsym XF86MonBrightnessUp exec brightnessctl set +5%
 bindsym XF86AudioPlay exec playerctl play-pause
 bindsym XF86AudioNext exec playerctl next
 bindsym XF86AudioPrev exec playerctl previous
+# Clipboard history selection
+bindsym $mod+Shift+v exec clipmenu
 
 #
 # Status Bar:
@@ -260,5 +262,7 @@ exec brightnessctl set 30%
 exec gammastep-indicator
 # Start snap xdg .desktop applications
 exec dex -as /var/lib/snapd/desktop/applications/
+# Launch clipboard manager
+exec clipmenud
 
 include /etc/sway/config.d/*
