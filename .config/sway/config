@@ -43,8 +43,9 @@ default_border pixel 2
 # Example configuration:
 #
 exec swayidle -w \
-         timeout 300 'swaylock -f -c 000000' \
-         timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+         timeout 250 'swaymsg "output * dpms off"' \
+	 timeout 300 'swaylock -f -c 000000' \
+	 resume 'swaymsg "output * dpms on"' \
          before-sleep 'swaylock -f -c 000000'
 #
 # This will lock your screen after 300 seconds of inactivity, then turn off
