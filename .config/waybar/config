@@ -23,7 +23,7 @@
     "format-alt": "{ifname}: {ipaddr}/{cidr}"
   },
   "temperature": {
-    // "thermal-zone": 2,
+    "thermal-zone": 1,
     // "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
     "critical-threshold": 80,
     // "format-critical": "{temperatureC}°C {icon}",
@@ -41,6 +41,7 @@
       "warning": 30,
       "critical": 15
     },
+    "full-at": 81,
     "format": "{capacity}% {icon}",
     "format-charging": "{capacity}% ",
     "format-plugged": "{capacity}% ",
