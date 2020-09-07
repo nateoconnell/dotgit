@@ -26,7 +26,8 @@ set $outer_gaps 0
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
+#output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
+output * bg /home/nate/Pictures/Wallpaper/starry-sky-night-mountians.jpg fill
 # Default gaps and minimal border
 gaps inner $inner_gaps
 gaps outer $outer_gaps
@@ -43,10 +44,10 @@ default_border pixel 2
 # Example configuration:
 #
 exec swayidle -w \
-         timeout 250 'swaymsg "output * dpms off"' \
-	 timeout 300 'swaylock -f -c 000000' \
-	 resume 'swaymsg "output * dpms on"' \
-         before-sleep 'swaylock -f -c 000000'
+        timeout 300 'swaylock -f -c 000000' \
+        timeout 600 'swaymsg "output * dpms off"' \
+        resume 'swaymsg "output * dpms on"' \
+        before-sleep 'swaylock -f -c 000000'
 #
 # This will lock your screen after 300 seconds of inactivity, then turn off
 # your displays after another 300 seconds, and turn your screens back on when
