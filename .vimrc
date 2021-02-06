@@ -21,10 +21,10 @@ endif
 " WSL clip.exe incorporation
 let s:clip = '/mnt/c/Windows/system32/clip.exe'
 if executable(s:clip)
-	augroup WSLclip
-		autocmd!
-		autocmd TextYankPost * call system(s:clip, @")
-	augroup END
+  augroup WSLclip
+    autocmd!
+    autocmd TextYankPost * call system(s:clip, @")
+  augroup END
 endif
 
 " Set line numbers
