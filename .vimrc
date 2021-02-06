@@ -147,6 +147,10 @@ nnoremap <leader>sv :source $MYVIMRC<CR>
 " Exit insert mode
 inoremap jk <Esc>
 
+" Toggle relativenumber
+inoremap <leader>rn <Esc>:set relativenumber!<CR>a
+nnoremap <leader>rn :set relativenumber!<CR>
+
 " Enable familiar copying
 vnoremap <C-C> "+y
 nnoremap <C-C> "+yiw
