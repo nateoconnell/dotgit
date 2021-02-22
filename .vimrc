@@ -151,9 +151,9 @@ inoremap jk <Esc>
 inoremap <leader>rn <Esc>:set relativenumber!<CR>a
 nnoremap <leader>rn :set relativenumber!<CR>
 
-" Enable familiar copying
-vnoremap <C-C> "+y
-nnoremap <C-C> "+yiw
+" Toggle paste mode
+inoremap <leader>sp <C-O>:set paste<CR>
+nnoremap <leader>sp :set paste!<CR>:set paste?<CR>
 
 " Enable familiar new tab
 noremap <leader>t <Esc>:tabnew<CR>
