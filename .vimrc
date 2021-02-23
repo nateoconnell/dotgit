@@ -173,10 +173,6 @@ inoremap <Leader>da <Esc>:r! date +\%Y\%m\%d<CR>kddEa
 noremap <leader>ww :w<CR>
 inoremap <leader>ww <Esc>:w<CR>a
 
-" Save and close
-noremap <leader>xx <Esc>:x<CR>
-inoremap <leader>xx <Esc>:x<CR>
-
 " Enable spellcheck
 noremap <leader>ss :set spell!<CR>
 inoremap <Leader>ss <Esc>:set spell!<CR>a
@@ -197,8 +193,8 @@ inoremap <Leader>ec <Esc>:exec "set colorcolumn=" . (&colorcolumn == "" ? "81" :
 noremap <Leader>cc :set cursorcolumn!<CR>
 inoremap <Leader>cc <ESC>:set cursorcolumn!<CR>a
 
-" Enable sentence backspace
-inoremap <leader>S <Esc>disi
+" Delete blank lines in selection
+vnoremap <leader>db :g/^\s*$/d<CR>
 
 " Uppercase current WORD
 inoremap <leader>U <C-O>viWU<Esc>Ea
@@ -216,6 +212,10 @@ nnoremap <leader>f viw<Esc>`<~e
 inoremap <leader>F <C-O>viW<Esc><C-O>`<<Esc>l~Ea
 nnoremap <leader>F viW<Esc>`<~E
 
+" Replace spaces with underscores in visual area and vice versa
+vnoremap <leader>su :s/\%V /_/g<CR>`<
+vnoremap <leader>us :s/\%V_/ /g<CR>`<
+
 " Add quotes, parentheses, etc around word/selection
 nnoremap <leader>" viw<Esc>a"<Esc>bi"<Esc>lel
 vnoremap <leader>" <Esc>`<i"<Esc>`>la"<Esc>
@@ -229,9 +229,6 @@ nnoremap <leader>{ viw<Esc>a}<Esc>bi{<Esc>lel
 vnoremap <leader>{ <Esc>`<i{<Esc>`>la}<Esc>
 nnoremap <leader>< viw<Esc>a><Esc>bi<<Esc>lel
 vnoremap <leader>< <Esc>`<i<<Esc>`>la><Esc>
-
-" Replace ScaleFT Links with ssh commands
-noremap <Leader>sf /scaleft:<CR>^c/\/a\//e<CR>sft ssh <Esc>f/cf? --<Esc>f=c/pbast<CR> <Esc>f&s --<Esc>f=r ^
 " }}}
 " FILETYPE KEYMAPPINGS {{{1 
 " Enable detection of filetypes and load 'ftplugin.vim' and 'indent.vim' in
@@ -441,9 +438,18 @@ vnoremap ,z1 <Esc>`>a<CR><C-K>!)}}<Esc>`<O <C-K>(!{{1<Esc>0i
 vnoremap ,z2 <Esc>`>a<CR><C-K>!)}}<Esc>`<O <C-K>(!{{2<Esc>0i
 vnoremap ,z3 <Esc>`>a<CR><C-K>!)}}<Esc>`<O <C-K>(!{{3<Esc>0i
 
-" Insert line and date
-iabbrev lda ————————————————————————————————————————————————————————————————————————————————<CR><Esc>:r! date +\%Y\%m\%d<CR>kdd$a
+" Insert fold and date
+iabbrev lda <Esc>:r!date +\%Y\%m\%d<CR>kddA <C-K>(!{{1<1-><CR><C-K>!)}}<Esc>?<1-><CR>"_ca<
 
 " Bash script start
 iabbrev bsc #!/bin/bash<CR><CR># exit on errors, exit if unset variable encountered, propagate error exit<CR>#  status through pipes<CR>set -o errexit -o nounset -o pipefail<CR>
+
+" Section separators
+iabbrev [. [...]
+iabbrev 4- ————————————————————————————————————————
+iabbrev 8- ————————————————————————————————————————————————————————————————————————————————
+iabbrev 4= ========================================
+iabbrev 8= ================================================================================
+iabbrev 4. ........................................
+iabbrev 8. ................................................................................
 " }}}
