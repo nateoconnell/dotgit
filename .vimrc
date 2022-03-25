@@ -27,6 +27,14 @@ if executable(s:clip)
   augroup END
 endif
 
+" Save a loaded session automatically on exit
+"augroup save_session
+"  autocmd!
+"  if !empty(v:this_session)
+"    autocmd VimLeavePre * execute "mksession! " .. v:this_session
+"  endif
+"augroup END
+
 " Set line numbers
 set number
 set relativenumber
@@ -44,6 +52,11 @@ set background=dark
 " Turn off search string highlighting
 set nohlsearch
 
+" Set default whitespace preferences
+set expandtab shiftwidth=2 softtabstop=2
+
+" Text wrap related settings
+set sidescroll=5
 " }}}
 " STATUSLINE {{{1
 "Enable statusline always with laststatus=2
@@ -54,6 +67,9 @@ set statusline+=\ \|\ 		" separator
 set statusline+=FileType:	" label
 set statusline+=%y		" filetype indicator
 set statusline+=%=		" shift to right
+set statusline+=Char:\          " label
+set statusline+=%b\ 0x%B        " char under cursor ascii and hex value
+set statusline+=\ \|\ 		" separator
 set statusline+=Col:		" label
 set statusline+=%c		" current column 3 char pad
 set statusline+=%V		" virt column 3 char pad
@@ -151,6 +167,10 @@ inoremap jk <Esc>
 inoremap <leader>rn <Esc>:set relativenumber!<CR>a
 nnoremap <leader>rn :set relativenumber!<CR>
 
+" Toggle text wrapping
+inoremap <leader>wr <Esc>:set wrap!<CR>a
+nnoremap <leader>wr :set wrap!<CR>
+
 " Toggle paste mode
 inoremap <leader>sp <C-O>:set paste<CR>
 nnoremap <leader>sp :set paste!<CR>:set paste?<CR>
@@ -164,6 +184,10 @@ noremap gl :tabmove-<CR>
 noremap gr :tabmove+<CR>
 noremap g0 :tabmove0<CR>
 noremap g$ :tabmove$<CR>
+
+" Toggle scrollbind
+nnoremap <leader>sb :windo set scrollbind!<CR>
+inoremap <leader>sb <Esc>:windo set scrollbind!<CR>a
 
 " Read in today's date
 noremap <Leader>da :r! date +\%Y\%m\%d<CR>kddE
@@ -181,9 +205,13 @@ inoremap <Leader>ss <Esc>:set spell!<CR>a
 noremap <leader>hl :set hlsearch!<CR>
 
 " Show tabs and trailing spaces
-set listchars=tab:>~,space:.,trail:-,eol:$,nbsp:%
+set listchars=tab:>~,space:.,trail:-,eol:$,nbsp:%,precedes:<,extends:>
 noremap <Leader>sl :set list!<CR>
 inoremap <Leader>sl <ESC>:set list!<CR>a
+
+" Remove all trailing whitespace
+noremap <Leader>ts :%s/\s\+$//g<CR>
+inoremap <Leader>ts <C-O>:%s/\s\+$//g<CR>
 
 " Toggle highlighting of 81st column
 noremap <Leader>ec :exec "set colorcolumn=" . (&colorcolumn == "" ? "81" : "")<CR>
@@ -221,6 +249,8 @@ nnoremap <leader>" viw<Esc>a"<Esc>bi"<Esc>lel
 vnoremap <leader>" <Esc>`<i"<Esc>`>la"<Esc>
 nnoremap <leader>' viw<Esc>a'<Esc>bi'<Esc>lel
 vnoremap <leader>' <Esc>`<i'<Esc>`>la'<Esc>
+nnoremap <leader>` viw<Esc>a`<Esc>bi`<Esc>lel
+vnoremap <leader>` <Esc>`<i`<Esc>`>la`<Esc>
 nnoremap <leader>( viw<Esc>a)<Esc>bi(<Esc>lel
 vnoremap <leader>( <Esc>`<i(<Esc>`>la)<Esc>
 nnoremap <leader>[ viw<Esc>a]<Esc>bi[<Esc>lel
@@ -396,6 +426,29 @@ autocmd FileType yaml inoremap <buffer> <LocalLeader>{ {{ <+1> }}<++><Esc>?<+1><
 " Declare end of autocommand group
 augroup END
 " }}}
+" JSON {{{2
+" Set filetype
+noremap <localleader>jn <Esc>:set filetype=json<CR>
+
+" Group autocommands so that they are not redundantly added every time vimrc
+"  is sourced
+augroup jsongroup
+
+" Clear all previously set autocommands in this group
+au!
+
+" Set autotabbing and fold behavior
+autocmd FileType json setlocal expandtab shiftwidth=2 softtabstop=2 foldmethod=syntax foldlevel=2
+
+" Tag shortcuts: either insert fillable tag structure in insert mode, or wrap
+"  selected text with tags in visual mode
+autocmd FileType json inoremap <buffer> <LocalLeader>{ {<CR><+1><CR>}<++><Esc>?<+1><CR>"_ca<
+autocmd FileType json inoremap <buffer> <LocalLeader>[ [<CR><+1><CR>]<++><Esc>?<+1><CR>"_ca<
+autocmd FileType json inoremap <buffer> <LocalLeader>" "<+1>": <++><Esc>?<+1><CR>"_ca<
+
+" Declare end of autocommand group
+augroup END
+" }}}
 " JINJA {{{2
 noremap <LocalLeader>jj <Esc>:set filetype=jinja<CR>
 
@@ -421,17 +474,132 @@ autocmd FileType jinja inoremap <buffer> <LocalLeader>{ {{ <+1> }}<++><Esc>?<+1>
 " Declare end of autocommand group
 augroup END
 " }}}
+" RUBY {{{2
+noremap <LocalLeader>rb <Esc>:set filetype=ruby<CR>
+noremap <LocalLeader>er <Esc>:set filetype=eruby<CR>
+
+" Group autocommands so that they are not redundantly added every time vimrc
+"  is sourced
+augroup rubygroup
+
+" Clear all previously set autocommands in this group
+au!
+
+" Set autotabbing behavior appropriately for ruby files
+autocmd FileType ruby,eruby setlocal expandtab shiftwidth=2 softtabstop=2 foldmethod=syntax foldlevel=99
+
+" Tag shortcuts: either insert fillable tag structure in insert mode, or wrap
+"  selected text with tags in visual mode
+autocmd FileType ruby,eruby inoremap <buffer> <LocalLeader>de def <+1><CR>end<ESC>?<+1><CR>"_ca<
+autocmd FileType ruby,eruby inoremap <buffer> <LocalLeader>cl class <+1><CR>end<ESC>?<+1><CR>"_ca<
+autocmd FileType ruby,eruby inoremap <buffer> <LocalLeader>ds describe <+1> do<CR><++><CR>end<ESC>?<+1><CR>"_ca<
+autocmd FileType ruby,eruby inoremap <buffer> <LocalLeader>it it <+1> do<CR><++><CR>end<ESC>?<+1><CR>"_ca<
+autocmd FileType ruby,eruby inoremap <buffer> <LocalLeader>do <+1> do<CR><++><CR>end<ESC>?<+1><CR>"_ca<
+autocmd FileType ruby,eruby inoremap <buffer> <LocalLeader>[ ['<+1>']<++><ESC>?<+1><CR>"_ca<
+autocmd FileType ruby,eruby inoremap <buffer> <LocalLeader>( ('<+1>')<++><ESC>?<+1><CR>"_ca<
+autocmd FileType ruby,eruby inoremap <buffer> <LocalLeader>cn control '<+1>' do<CR>impact 1.0<CR>title '<++>'<CR>desc '<++>'<CR><++><CR>end<ESC>?<+1><CR>"_ca<
+
+" Declare end of autocommand group
+augroup END
+" }}}
+" JIRA {{{2
+noremap <LocalLeader>jr <Esc>:set filetype=jira<CR>
+
+" Group autocommands so that they are not redundantly added every time vimrc
+"  is sourced
+augroup jiragroup
+
+" Clear all previously set autocommands in this group
+au!
+
+" Set autotabbing behavior appropriately for ruby files
+autocmd FileType jira setlocal expandtab shiftwidth=2 softtabstop=2
+
+" Tag shortcuts: either insert fillable tag structure in insert mode, or wrap
+"  selected text with tags in visual mode
+autocmd FileType jira inoremap <buffer> <LocalLeader>nf {noformat}<CR><+1><CR>{noformat}<CR><++><ESC>?<+1><CR>"_ca<
+autocmd FileType jira vnoremap <buffer> <LocalLeader>nf <ESC>`>o{noformat}<ESC>`<O{noformat}<ESC>`>
+autocmd FileType jira inoremap <buffer> <LocalLeader>bq {quote}<CR><+1><CR>{quote}<CR><++><ESC>?<+1><CR>"_ca<
+autocmd FileType jira vnoremap <buffer> <LocalLeader>bq <ESC>`>o{quote}<ESC>`<O{quote}<ESC>`>
+autocmd FileType jira inoremap <buffer> <LocalLeader>nt {noformat:title=<+1>}<CR><++><CR>{noformat}<CR><++><ESC>?<+1><CR>"_ca<
+autocmd FileType jira vnoremap <buffer> <LocalLeader>nt <ESC>`>o{noformat}<ESC>`<O{noformat:title=}<C-O>i
+autocmd FileType jira inoremap <buffer> <LocalLeader>co {code}<CR><+1><CR>{code}<CR><++><ESC>?<+1><CR>"_ca<
+autocmd FileType jira vnoremap <buffer> <LocalLeader>co <ESC>`>o{code}<ESC>`<O{code}<ESC>`>
+autocmd FileType jira inoremap <buffer> <LocalLeader>ct {code:title=<+1>}<CR><++><CR>{code}<CR><++><ESC>?<+1><CR>"_ca<
+autocmd FileType jira vnoremap <buffer> <LocalLeader>ct <ESC>`>o{code}<ESC>`<O{code:title=}<C-O>i
+autocmd FileType jira inoremap <buffer> <LocalLeader>1 h1.<Space>
+autocmd FileType jira inoremap <buffer> <LocalLeader>2 h2.<Space>
+autocmd FileType jira inoremap <buffer> <LocalLeader>3 h3.<Space>
+autocmd FileType jira inoremap <buffer> <LocalLeader>4 h4.<Space>
+autocmd FileType jira inoremap <buffer> <LocalLeader>5 h5.<Space>
+autocmd FileType jira inoremap <buffer> <LocalLeader>6 h6.<Space>
+autocmd FileType jira inoremap <buffer> <LocalLeader>th \|\|\|\|<++><Esc>2F\|i
+autocmd FileType jira vnoremap <buffer> <LocalLeader>th <Esc>`>a\|\|<Esc>`<i\|\|<Esc>2f\|
+autocmd FileType jira inoremap <buffer> <LocalLeader>tr \|\|<++><Esc>F\|i
+autocmd FileType jira vnoremap <buffer> <LocalLeader>tr <Esc>`>a\|<Esc>`<i\|<Esc>f\|
+autocmd FileType jira inoremap <buffer> <LocalLeader>i __<Space><++><Esc>F_i
+autocmd FileType jira vnoremap <buffer> <LocalLeader>i <Esc>`>a_<Esc>`<i_<Esc>`>
+autocmd FileType jira inoremap <buffer> <LocalLeader>B **<Space><++><Esc>F*i
+autocmd FileType jira vnoremap <buffer> <LocalLeader>B <Esc>`>a*<Esc>`<i*<Esc>`>
+autocmd FileType jira inoremap <buffer> <LocalLeader>? ????<Space><++><Esc>2F?i
+autocmd FileType jira vnoremap <buffer> <LocalLeader>? <Esc>`>a??<Esc>`<i??<Esc>`>
+autocmd FileType jira inoremap <buffer> <LocalLeader>u ++<Space><++><Esc>?+\s<CR>i
+autocmd FileType jira vnoremap <buffer> <LocalLeader>u <Esc>`>a+<Esc>`<i+<Esc>`>
+autocmd FileType jira inoremap <buffer> <LocalLeader>s --<Space><++><Esc>F-i
+autocmd FileType jira vnoremap <buffer> <LocalLeader>s <Esc>`>a-<Esc>`<i-<Esc>`>
+autocmd FileType jira inoremap <buffer> <LocalLeader>- ~~<Space><++><Esc>F~i
+autocmd FileType jira vnoremap <buffer> <LocalLeader>- <Esc>`>a~<Esc>`<i~<Esc>`>
+autocmd FileType jira inoremap <buffer> <LocalLeader>+ ^^<Space><++><Esc>F^i
+autocmd FileType jira vnoremap <buffer> <LocalLeader>+ <Esc>`>a^<Esc>`<i^<Esc>`>
+autocmd FileType jira inoremap <buffer> <LocalLeader>m '{{}}'<Space><++><Esc>2F}i
+autocmd FileType jira vnoremap <buffer> <LocalLeader>m <Esc>`>a}}'<Esc>`<i'{{<Esc>/}}'/e<CR>
+autocmd FileType jira inoremap <buffer> <LocalLeader>aa []<Space><++><Esc>F]i
+autocmd FileType jira vnoremap <buffer> <LocalLeader>aa <Esc>`>a]<Esc>`<i[<Esc>`>
+autocmd FileType jira inoremap <buffer> <LocalLeader>at [<C-V>u7C<Esc>a<++>]<Space><++><Esc>F[a
+autocmd FileType jira vnoremap <buffer> <LocalLeader>at <Esc>`>a<C-V>u7C<Esc>a]<Space><++><Esc>`<i[<C-O>f]
+
+" Declare end of autocommand group
+augroup END
+" }}}
+" HCL {{{2
+" Group autocommands so that they are not redundantly added every time vimrc
+"  is sourced
+augroup hclgroup
+
+" Clear all previously set autocommands in this group
+au!
+
+" Set default fold behavior
+autocmd FileType hcl,terraform setlocal foldmethod=syntax foldlevel=99
+
+" Tag shortcuts: either insert fillable tag structure in insert mode, or wrap
+"  selected text with tags in visual mode
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>te terraform {<CR>required_version = "<+1>"<CR>required_providers {<CR><++><CR>}<CR>}<++><Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>rp "<+1>" = {<CR>source = "<++>"<CR>version = "<++>"<CR>}<++><Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>pr provider "<+1>" {<CR>features {<++>}<CR>}<++><Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>re resource "<+1>" "<++>" {<CR><++><CR>}<++><Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>kv <+1> = <++><Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>ks <+1> = "<++>"<Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>kl <+1> = ["<++>"]<Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>km <+1> = {<CR><++><CR>}<++><Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>bl <+1> {<CR><++><CR>}<++><Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>de depends_on = [<CR><+1><CR>]<Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>fo for_each = {<CR><+1><CR>}<++><Esc>?<+1><CR>"_ca<
+
+" Declare end of autocommand group
+augroup END
+" }}}
 " }}}
 " ABBREVIATIONS {{{1 
-iabbrev sig Thank you,<CR>Nate O'Connell<CR>Linux Support Engineer
-iabbrev nsig [1]. <++><CR><CR><CR>Thank you,<CR>Nate O'Connell<CR>Linux Support Engineer<CR><CR><CR>[1]
+iabbrev sig Thank you,<CR>Nate O'Connell<CR>Automation Engineer
+iabbrev nsig [1]. <++><CR><CR><CR>Thank you,<CR>Nate O'Connell<CR>Automation Engineer<CR><CR><CR>[1]
 
 " Use the <C-K> digraph functionality to insert the { and } characters without
 "  actually creating the folds in this file: <C-K> (! = { and <C-K> !) = } in
 "  insert mode
-iabbrev z1 <++> {{<C-K>(!1<--><CR>}}<C-K>!)<CR><Esc>?<--<CR>ca<
-iabbrev z2 <++> {{<C-K>(!2<--><CR>}}<C-K>!)<CR><Esc>?<--<CR>ca<
-iabbrev z3 <++> {{<C-K>(!3<--><CR>}}<C-K>!)<CR><Esc>?<--<CR>ca<
+iabbrev z1 <++> {{<C-K>(!1<--><CR>}}<C-K>!)<CR><Esc>?<--<CR>"_ca<
+iabbrev z2 <++> {{<C-K>(!2<--><CR>}}<C-K>!)<CR><Esc>?<--<CR>"_ca<
+iabbrev z3 <++> {{<C-K>(!3<--><CR>}}<C-K>!)<CR><Esc>?<--<CR>"_ca<
 " Not abbreviations, but related to creating folds. Wrap visually selected
 "  text with fold markers.
 vnoremap ,z1 <Esc>`>a<CR><C-K>!)}}<Esc>`<O <C-K>(!{{1<Esc>0i
@@ -440,9 +608,10 @@ vnoremap ,z3 <Esc>`>a<CR><C-K>!)}}<Esc>`<O <C-K>(!{{3<Esc>0i
 
 " Insert fold and date
 iabbrev lda <Esc>:r!date +\%Y\%m\%d<CR>kddA <C-K>(!{{1<1-><CR><C-K>!)}}<Esc>?<1-><CR>"_ca<
+iabbrev sda <Esc>:r!date +\%Y\%m\%d<CR>kddA <C-K>(!{{2<1-><CR><C-K>!)}}<Esc>?<1-><CR>"_ca<
 
 " Bash script start
-iabbrev bsc #!/bin/bash<CR><CR># exit on errors, exit if unset variable encountered, propagate error exit<CR>#  status through pipes<CR>set -o errexit -o nounset -o pipefail<CR>
+iabbrev bsc #!/usr/bin/env bash<CR><CR># exit on errors, exit if unset variable encountered, propagate error exit<CR>#  status through pipes<CR>set -o errexit -o nounset -o pipefail<CR>
 
 " Section separators
 iabbrev [. [...]
