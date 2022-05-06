@@ -575,16 +575,28 @@ autocmd FileType hcl,terraform setlocal foldmethod=syntax foldlevel=99
 " Tag shortcuts: either insert fillable tag structure in insert mode, or wrap
 "  selected text with tags in visual mode
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>te terraform {<CR>required_version = "<+1>"<CR>required_providers {<CR><++><CR>}<CR>}<++><Esc>?<+1><CR>"_ca<
-autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>rp "<+1>" = {<CR>source = "<++>"<CR>version = "<++>"<CR>}<++><Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>rp <+1> = {<CR>source = "<++>"<CR>version = "<++>"<CR>}<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>pr provider "<+1>" {<CR>features {<++>}<CR>}<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>re resource "<+1>" "<++>" {<CR><++><CR>}<++><Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>da data "<+1>" "<++>" {<CR><++><CR>}<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>kv <+1> = <++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>ks <+1> = "<++>"<Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>kl <+1> = ["<++>"]<Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>km <+1> = {<CR><++><CR>}<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>bl <+1> {<CR><++><CR>}<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>de depends_on = [<CR><+1><CR>]<Esc>?<+1><CR>"_ca<
-autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>fo for_each = {<CR><+1><CR>}<++><Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>fo for_each = 
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>lo lookup(<+1>, "<++>", <++>)<++><Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform vnoremap <buffer> <LocalLeader>lo xalookup(<+1>, "<+2>", null)<Esc>?<+1><CR>"_ca<<Esc>pvT.xi<BS><ESC>/<+2><CR>"_ca<<Esc>p$
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>li lifecycle {<CR><+1><CR>}<++><Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>ig ignore_changes = [<CR><+1><CR>]<++><Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>va variable "<+1>" {<CR>description = "<++>"<CR>type = <++><CR>default = <++><CR>}<++><Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>vl validation {<CR>condition = <+1><CR>error_message = <++><CR>}<++><Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>ou output "<+1>" {<CR>description = "<++>"<CR>value = <++><CR>}<++><Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>mo module "<+1>" {<CR>source = "<++>"<CR>}<++><Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>dy dynamic "<+1>" {<CR>for_each = <++><CR>iterator = <++><CR>content{<CR><++><CR>}<CR>}<++><Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>iv <Esc>yiwea = ITER.value.<Esc>pa
+autocmd FileType hcl,terraform vnoremap <buffer> <LocalLeader>iv yea = ITER.value.<Esc>p
 
 " Declare end of autocommand group
 augroup END
