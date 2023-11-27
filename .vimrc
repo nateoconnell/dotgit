@@ -4,7 +4,9 @@ unlet! skip_defaults_vim
 source $VIMRUNTIME/defaults.vim
 
 " PLUGIN LOADING {{{1
-" Import vim bundles
+" Packages stored in ~/.vim/pack
+"  See ':help packages' and ':help plugin'
+" Alternatively, use pathogen to import vim bundles
 "  https://github.com/tpope/vim-pathogen
 "execute pathogen#infect()
 " }}}
@@ -26,14 +28,6 @@ if executable(s:clip)
     autocmd TextYankPost * call system(s:clip, @")
   augroup END
 endif
-
-" Save a loaded session automatically on exit
-"augroup save_session
-"  autocmd!
-"  if !empty(v:this_session)
-"    autocmd VimLeavePre * execute "mksession! " .. v:this_session
-"  endif
-"augroup END
 
 " Set line numbers
 set number
@@ -57,6 +51,9 @@ set expandtab shiftwidth=2 softtabstop=2
 
 " Text wrap related settings
 set sidescroll=5
+
+" Don't open preview-window with omnifunc code completion
+set completeopt-=preview
 " }}}
 " STATUSLINE {{{1
 "Enable statusline always with laststatus=2
@@ -190,8 +187,8 @@ nnoremap <leader>sb :windo set scrollbind!<CR>
 inoremap <leader>sb <Esc>:windo set scrollbind!<CR>a
 
 " Read in today's date
-noremap <Leader>da :r! date +\%Y\%m\%d<CR>kddE
-inoremap <Leader>da <Esc>:r! date +\%Y\%m\%d<CR>kddEa
+noremap <leader>da :r! date +\%Y\%m\%d<CR>kddE
+inoremap <leader>da <Esc>:r! date +\%Y\%m\%d<CR>kddEa
 
 " Quick save
 noremap <leader>ww :w<CR>
@@ -361,14 +358,15 @@ autocmd FileType markdown inoremap <buffer> <LocalLeader>s ~~~~<Space><++><Esc>F
 autocmd FileType markdown inoremap <buffer> <LocalLeader>e **<Space><++><Esc>F*i
 autocmd FileType markdown inoremap <buffer> <LocalLeader>H ====<CR><++><Esc>kO
 autocmd FileType markdown inoremap <buffer> <LocalLeader>i ![](<++>)<Space><++><Esc>F[a
-autocmd FileType markdown inoremap <buffer> <LocalLeader>a [](<++>)<Space><++><Esc>F[a
+autocmd FileType markdown inoremap <buffer> <LocalLeader>l [](<++>)<Space><++><Esc>F[a
+autocmd FileType markdown inoremap <buffer> <LocalLeader>a <a name="<+1>"></a><++><Esc>?<+1><CR>"_ca<
 autocmd FileType markdown inoremap <buffer> <LocalLeader>1 #<Space><CR><++><Esc>kA
 autocmd FileType markdown inoremap <buffer> <LocalLeader>2 ##<Space><CR><++><Esc>kA
 autocmd FileType markdown inoremap <buffer> <LocalLeader>3 ###<Space><CR><++><Esc>kA
 autocmd FileType markdown inoremap <buffer> <LocalLeader>4 ####<Space><CR><++><Esc>kA
 autocmd FileType markdown inoremap <buffer> <LocalLeader>5 #####<Space><CR><++><Esc>kA
 autocmd FileType markdown inoremap <buffer> <LocalLeader>6 ######<Space><CR><++><Esc>kA
-autocmd FileType markdown inoremap <buffer> <LocalLeader>l --------<CR>
+autocmd FileType markdown inoremap <buffer> <LocalLeader>d --------<CR>
 autocmd FileType markdown inoremap <buffer> <LocalLeader>c ``<Space><++><Esc>F`i
 autocmd FileType markdown inoremap <buffer> <LocalLeader>p ```<CR>```<CR><++><Esc>?`<CR>O
 
@@ -535,8 +533,12 @@ autocmd FileType jira inoremap <buffer> <LocalLeader>5 h5.<Space>
 autocmd FileType jira inoremap <buffer> <LocalLeader>6 h6.<Space>
 autocmd FileType jira inoremap <buffer> <LocalLeader>th \|\|\|\|<++><Esc>2F\|i
 autocmd FileType jira vnoremap <buffer> <LocalLeader>th <Esc>`>a\|\|<Esc>`<i\|\|<Esc>2f\|
+autocmd FileType jira inoremap <buffer> <LocalLeader>nh \|\|<++><Esc>2F\|i
+autocmd FileType jira vnoremap <buffer> <LocalLeader>nh <Esc>`>a\|\|<Esc>
 autocmd FileType jira inoremap <buffer> <LocalLeader>tr \|\|<++><Esc>F\|i
 autocmd FileType jira vnoremap <buffer> <LocalLeader>tr <Esc>`>a\|<Esc>`<i\|<Esc>f\|
+autocmd FileType jira inoremap <buffer> <LocalLeader>nr \|<++><Esc>F\|i
+autocmd FileType jira vnoremap <buffer> <LocalLeader>nr <Esc>`>a\|<Esc>
 autocmd FileType jira inoremap <buffer> <LocalLeader>i __<Space><++><Esc>F_i
 autocmd FileType jira vnoremap <buffer> <LocalLeader>i <Esc>`>a_<Esc>`<i_<Esc>`>
 autocmd FileType jira inoremap <buffer> <LocalLeader>B **<Space><++><Esc>F*i
@@ -562,6 +564,8 @@ autocmd FileType jira vnoremap <buffer> <LocalLeader>at <Esc>`>a<C-V>u7C<Esc>a]<
 augroup END
 " }}}
 " HCL {{{2
+noremap <LocalLeader>tf <Esc>:set filetype=terraform<CR>
+
 " Group autocommands so that they are not redundantly added every time vimrc
 "  is sourced
 augroup hclgroup
@@ -574,6 +578,8 @@ autocmd FileType hcl,terraform setlocal foldmethod=syntax foldlevel=99
 
 " Tag shortcuts: either insert fillable tag structure in insert mode, or wrap
 "  selected text with tags in visual mode
+autocmd FileType hcl,terraform noremap <buffer> <LocalLeader>ff :TerraformFmt<CR>
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>ff <C-O>:TerraformFmt<CR>
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>te terraform {<CR>required_version = "<+1>"<CR>required_providers {<CR><++><CR>}<CR>}<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>rp <+1> = {<CR>source = "<++>"<CR>version = "<++>"<CR>}<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>pr provider "<+1>" {<CR>features {<++>}<CR>}<++><Esc>?<+1><CR>"_ca<
@@ -588,30 +594,55 @@ autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>de depends_on = [<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>fo for_each = 
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>lo lookup(<+1>, "<++>", <++>)<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform vnoremap <buffer> <LocalLeader>lo xalookup(<+1>, "<+2>", null)<Esc>?<+1><CR>"_ca<<Esc>pvT.xi<BS><ESC>/<+2><CR>"_ca<<Esc>p$
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>tr try(<+1> != null ? <++> : [], <++>)<++><Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform vnoremap <buffer> <LocalLeader>tr xatry(<+1> != null ? <+2> : [], <+3>)<Esc>?<+1><CR>"_ca<<Esc>p/<+2><CR>"_ca<<Esc>p/<+3><CR>"_ca<<Esc>p$
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>li lifecycle {<CR><+1><CR>}<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>ig ignore_changes = [<CR><+1><CR>]<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>va variable "<+1>" {<CR>description = "<++>"<CR>type = <++><CR>default = <++><CR>}<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>vl validation {<CR>condition = <+1><CR>error_message = <++><CR>}<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>ou output "<+1>" {<CR>description = "<++>"<CR>value = <++><CR>}<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>mo module "<+1>" {<CR>source = "<++>"<CR>}<++><Esc>?<+1><CR>"_ca<
-autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>dy dynamic "<+1>" {<CR>for_each = <++><CR>iterator = <++><CR>content{<CR><++><CR>}<CR>}<++><Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>dy dynamic "<+1>" {<CR>for_each = <++><CR>iterator = <++><CR>content {<CR><++><CR>}<CR>}<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>iv <Esc>yiwea = ITER.value.<Esc>pa
 autocmd FileType hcl,terraform vnoremap <buffer> <LocalLeader>iv yea = ITER.value.<Esc>p
 
 " Declare end of autocommand group
 augroup END
 " }}}
+" GO {{{2
+" Set filetype
+noremap <localleader>go <Esc>:set filetype=go<CR>
+
+" Group autocommands so that they are not redundantly added every time vimrc
+"  is sourced
+augroup gogroup
+
+" Clear all previously set autocommands in this group
+au!
+
+" Set autotabbing behavior appropriately for go files
+autocmd FileType go setlocal foldmethod=syntax foldlevel=99 noexpandtab shiftwidth=0 softtabstop=0
+
+" Tag shortcuts: either insert fillable tag structure in insert mode, or wrap
+"  selected text with tags in visual mode
+autocmd FileType go noremap <buffer> <LocalLeader>ff :GoFmt<CR>
+autocmd FileType go inoremap <buffer> <LocalLeader>ff <C-O>:GoFmt<CR>
+autocmd FileType go inoremap <buffer> <LocalLeader>fu func <+1> {<CR><++><CR>}<++><Esc>?<+1><CR>"_ca<
+
+" Declare end of autocommand group
+augroup END
+" }}}
 " }}}
 " ABBREVIATIONS {{{1 
-iabbrev sig Thank you,<CR>Nate O'Connell<CR>Automation Engineer
-iabbrev nsig [1]. <++><CR><CR><CR>Thank you,<CR>Nate O'Connell<CR>Automation Engineer<CR><CR><CR>[1]
+iabbrev sig Thank you,<CR>Nate O'Connell<CR>DevOps Engineer
+iabbrev nsig [1]. <++><CR><CR><CR>Thank you,<CR>Nate O'Connell<CR>DevOps Engineer<CR><CR><CR>[1]
 
 " Use the <C-K> digraph functionality to insert the { and } characters without
 "  actually creating the folds in this file: <C-K> (! = { and <C-K> !) = } in
 "  insert mode
-iabbrev z1 <++> {{<C-K>(!1<--><CR>}}<C-K>!)<CR><Esc>?<--<CR>"_ca<
-iabbrev z2 <++> {{<C-K>(!2<--><CR>}}<C-K>!)<CR><Esc>?<--<CR>"_ca<
-iabbrev z3 <++> {{<C-K>(!3<--><CR>}}<C-K>!)<CR><Esc>?<--<CR>"_ca<
+iabbrev z1 {{<C-K>(!1<--><CR>}}<C-K>!)<CR><Esc>?<--<CR>"_ca<
+iabbrev z2 {{<C-K>(!2<--><CR>}}<C-K>!)<CR><Esc>?<--<CR>"_ca<
+iabbrev z3 {{<C-K>(!3<--><CR>}}<C-K>!)<CR><Esc>?<--<CR>"_ca<
 " Not abbreviations, but related to creating folds. Wrap visually selected
 "  text with fold markers.
 vnoremap ,z1 <Esc>`>a<CR><C-K>!)}}<Esc>`<O <C-K>(!{{1<Esc>0i
