@@ -3,12 +3,42 @@
 unlet! skip_defaults_vim
 source $VIMRUNTIME/defaults.vim
 
+" ALE {{{1
+" Settings for plugin 'dense-analysis/ale'
+"  See ':help ale' for configuration details
+
+" Enable completion where available.
+" This setting must be set before ALE is loaded.
+"
+" You should not turn this setting on if you wish to use ALE as a completion
+" source for other completion plugins, like Deoplete.
+let g:ale_completion_enabled = 1
+
+" Alwasy show sign column to avoid text jitter
+let g:ale_sign_column_always = 1
+
+" Set LSP server or linter if not used by default
+let g:ale_linters = {
+\   'python': ['pylsp'],
+\}
+
+" Set global and file type specific fixers
+let g:ale_fixers = {
+\   '*': ['remove_trailing_lines', 'trim_whitespace'],
+\   'terraform': ['terraform'],
+\}
+" }}}
 " PLUGIN LOADING {{{1
 " Packages stored in ~/.vim/pack
 "  See ':help packages' and ':help plugin'
-" Alternatively, use pathogen to import vim bundles
-"  https://github.com/tpope/vim-pathogen
-"execute pathogen#infect()
+" Alternatively, use vim-plug to manage plugins
+"   https://github.com/junegunn/vim-plug
+call plug#begin()
+Plug 'hashivim/vim-terraform', { 'for': ['hcl', 'terraform'] }
+Plug 'srcery-colors/srcery-vim'
+Plug 'dense-analysis/ale'
+Plug 'preservim/nerdtree'
+call plug#end()
 " }}}
 " FEATURE SETTINGS {{{1 
 " Yank to clipboard
@@ -26,6 +56,8 @@ if executable(s:clip)
   augroup WSLclip
     autocmd!
     autocmd TextYankPost * call system(s:clip, @")
+    " Remove trailing ^M characters after pasting from Windows clipboard
+    autocmd TextChanged * silent! '[,']s/\r$//e
   augroup END
 endif
 
@@ -36,12 +68,30 @@ set relativenumber
 " New lines start with same indentation as previous line
 set autoindent
 
+" Enable mouse support
+set mouse=a
+set ttymouse=sgr
+
 " Enable automatic folding with {x3 markers
 "  The {x3 marker is the default fold marker in vim
 set foldmethod=marker
 
+" Use termguicolors if available
+if has('termguicolors')
+  " see ':help 'xterm-true-color' for explanation
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+  set termguicolors
+endif
+
 " Set appropriate text colors for dark background
 set background=dark
+
+" Set colorscheme. This one requires 'srcery-colors/srcery-vim' plugin
+" see ':help srcery' for options
+let g:srcery_italic = 1
+let g:srcery_bg = ['NONE', 'NONE']
+colorscheme srcery
 
 " Turn off search string highlighting
 set nohlsearch
@@ -52,8 +102,11 @@ set expandtab shiftwidth=2 softtabstop=2
 " Text wrap related settings
 set sidescroll=5
 
+" Use ALE omnifunc. Requires 'dense-analysis/ale' plugin
+set omnifunc=ale#completion#OmniFunc
+
 " Don't open preview-window with omnifunc code completion
-set completeopt-=preview
+"set completeopt-=preview
 " }}}
 " STATUSLINE {{{1
 "Enable statusline always with laststatus=2
@@ -182,6 +235,12 @@ noremap gr :tabmove+<CR>
 noremap g0 :tabmove0<CR>
 noremap g$ :tabmove$<CR>
 
+" Window movement
+nnoremap <c-h> <c-w><c-h>
+nnoremap <c-j> <c-w><c-j>
+nnoremap <c-k> <c-w><c-k>
+nnoremap <c-l> <c-w><c-l>
+
 " Toggle scrollbind
 nnoremap <leader>sb :windo set scrollbind!<CR>
 inoremap <leader>sb <Esc>:windo set scrollbind!<CR>a
@@ -256,6 +315,10 @@ nnoremap <leader>{ viw<Esc>a}<Esc>bi{<Esc>lel
 vnoremap <leader>{ <Esc>`<i{<Esc>`>la}<Esc>
 nnoremap <leader>< viw<Esc>a><Esc>bi<<Esc>lel
 vnoremap <leader>< <Esc>`<i<<Esc>`>la><Esc>
+" }}}
+" NERDTree {{{1
+nnoremap <Leader>nt :NERDTree<CR>
+nnoremap <Leader>nm :NERDTreeMirror<CR>
 " }}}
 " FILETYPE KEYMAPPINGS {{{1 
 " Enable detection of filetypes and load 'ftplugin.vim' and 'indent.vim' in
@@ -578,8 +641,12 @@ autocmd FileType hcl,terraform setlocal foldmethod=syntax foldlevel=99
 
 " Tag shortcuts: either insert fillable tag structure in insert mode, or wrap
 "  selected text with tags in visual mode
+
+" Requires 'hashivim/vim-terraform' plugin
 autocmd FileType hcl,terraform noremap <buffer> <LocalLeader>ff :TerraformFmt<CR>
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>ff <C-O>:TerraformFmt<CR>
+
+" Native vim
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>te terraform {<CR>required_version = "<+1>"<CR>required_providers {<CR><++><CR>}<CR>}<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>rp <+1> = {<CR>source = "<++>"<CR>version = "<++>"<CR>}<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>pr provider "<+1>" {<CR>features {<++>}<CR>}<++><Esc>?<+1><CR>"_ca<
@@ -599,6 +666,7 @@ autocmd FileType hcl,terraform vnoremap <buffer> <LocalLeader>tr xatry(<+1> != n
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>li lifecycle {<CR><+1><CR>}<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>ig ignore_changes = [<CR><+1><CR>]<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>va variable "<+1>" {<CR>description = "<++>"<CR>type = <++><CR>default = <++><CR>}<++><Esc>?<+1><CR>"_ca<
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>hh ########################################<CR># <+1><CR><BS>#######################################<CR><++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>vl validation {<CR>condition = <+1><CR>error_message = <++><CR>}<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>ou output "<+1>" {<CR>description = "<++>"<CR>value = <++><CR>}<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>mo module "<+1>" {<CR>source = "<++>"<CR>}<++><Esc>?<+1><CR>"_ca<
@@ -632,6 +700,26 @@ autocmd FileType go inoremap <buffer> <LocalLeader>fu func <+1> {<CR><++><CR>}<+
 " Declare end of autocommand group
 augroup END
 " }}}
+" PYTHON {{{2
+" Set filetype
+noremap <localleader>py <Esc>:set filetype=python<CR>
+
+" Group autocommands so that they are not redundantly added every time vimrc
+"  is sourced
+augroup pythongroup
+
+" Clear all previously set autocommands in this group
+au!
+
+" Set autotabbing behavior appropriately for python files
+autocmd FileType python setlocal foldmethod=syntax foldlevel=99 shiftwidth=4 softtabstop=4
+
+" Tag shortcuts: either insert fillable tag structure in insert mode, or wrap
+"  selected text with tags in visual mode
+
+" Declare end of autocommand group
+augroup END
+" }}}
 " }}}
 " ABBREVIATIONS {{{1 
 iabbrev sig Thank you,<CR>Nate O'Connell<CR>DevOps Engineer
@@ -640,9 +728,9 @@ iabbrev nsig [1]. <++><CR><CR><CR>Thank you,<CR>Nate O'Connell<CR>DevOps Enginee
 " Use the <C-K> digraph functionality to insert the { and } characters without
 "  actually creating the folds in this file: <C-K> (! = { and <C-K> !) = } in
 "  insert mode
-iabbrev z1 {{<C-K>(!1<--><CR>}}<C-K>!)<CR><Esc>?<--<CR>"_ca<
-iabbrev z2 {{<C-K>(!2<--><CR>}}<C-K>!)<CR><Esc>?<--<CR>"_ca<
-iabbrev z3 {{<C-K>(!3<--><CR>}}<C-K>!)<CR><Esc>?<--<CR>"_ca<
+iabbrev z1 {{<C-K>(!1<--><CR>}}<C-K>!)<Esc>?<--<CR>"_ca<
+iabbrev z2 {{<C-K>(!2<--><CR>}}<C-K>!)<Esc>?<--<CR>"_ca<
+iabbrev z3 {{<C-K>(!3<--><CR>}}<C-K>!)<Esc>?<--<CR>"_ca<
 " Not abbreviations, but related to creating folds. Wrap visually selected
 "  text with fold markers.
 vnoremap ,z1 <Esc>`>a<CR><C-K>!)}}<Esc>`<O <C-K>(!{{1<Esc>0i
@@ -654,7 +742,7 @@ iabbrev lda <Esc>:r!date +\%Y\%m\%d<CR>kddA <C-K>(!{{1<1-><CR><C-K>!)}}<Esc>?<1-
 iabbrev sda <Esc>:r!date +\%Y\%m\%d<CR>kddA <C-K>(!{{2<1-><CR><C-K>!)}}<Esc>?<1-><CR>"_ca<
 
 " Bash script start
-iabbrev bsc #!/usr/bin/env bash<CR><CR># exit on errors, exit if unset variable encountered, propagate error exit<CR>#  status through pipes<CR>set -o errexit -o nounset -o pipefail<CR>
+iabbrev bscr #!/usr/bin/env bash<CR><CR># exit on errors, exit if unset variable encountered, propagate error exit<CR>#  status through pipes<CR>set -o errexit -o nounset -o pipefail<CR>
 
 " Section separators
 iabbrev [. [...]
@@ -662,6 +750,8 @@ iabbrev 4- ———————————————————————
 iabbrev 8- ————————————————————————————————————————————————————————————————————————————————
 iabbrev 4= ========================================
 iabbrev 8= ================================================================================
+iabbrev 4# ########################################
+iabbrev 8# ################################################################################
 iabbrev 4. ........................................
 iabbrev 8. ................................................................................
 " }}}
