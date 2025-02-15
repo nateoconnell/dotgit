@@ -701,8 +701,8 @@ autocmd FileType go setlocal foldmethod=syntax foldlevel=99 noexpandtab shiftwid
 "  selected text with tags in visual mode
 
 " Requires fatih/vim-go plugin
-autocmd FileType go noremap <buffer> <LocalLeader>ff :GoFmt<CR>
-autocmd FileType go inoremap <buffer> <LocalLeader>ff <C-O>:GoFmt<CR>
+"autocmd FileType go noremap <buffer> <LocalLeader>ff :GoFmt<CR>
+"autocmd FileType go inoremap <buffer> <LocalLeader>ff <C-O>:GoFmt<CR>
 
 " Native vim
 autocmd FileType go inoremap <buffer> <LocalLeader>fu func <+1> {<CR><++><CR>}<++><Esc>?<+1><CR>"_ca<
