@@ -277,6 +277,12 @@ inoremap <Leader>ec <Esc>:exec "set colorcolumn=" . (&colorcolumn == "" ? "81" :
 noremap <Leader>cc :set cursorcolumn!<CR>
 inoremap <Leader>cc <ESC>:set cursorcolumn!<CR>a
 
+" Open and close location list
+noremap <Leader>lo :lopen<CR>
+inoremap <Leader>lo <ESC>:lopen<CR>
+noremap <Leader>lc :lclose<CR>
+inoremap <Leader>lc <ESC>:lclose<CR>
+
 " Delete blank lines in selection
 vnoremap <leader>db :g/^\s*$/d<CR>
 
@@ -693,8 +699,12 @@ autocmd FileType go setlocal foldmethod=syntax foldlevel=99 noexpandtab shiftwid
 
 " Tag shortcuts: either insert fillable tag structure in insert mode, or wrap
 "  selected text with tags in visual mode
+
+" Requires fatih/vim-go plugin
 autocmd FileType go noremap <buffer> <LocalLeader>ff :GoFmt<CR>
 autocmd FileType go inoremap <buffer> <LocalLeader>ff <C-O>:GoFmt<CR>
+
+" Native vim
 autocmd FileType go inoremap <buffer> <LocalLeader>fu func <+1> {<CR><++><CR>}<++><Esc>?<+1><CR>"_ca<
 
 " Declare end of autocommand group
@@ -716,15 +726,14 @@ autocmd FileType python setlocal foldmethod=syntax foldlevel=99 shiftwidth=4 sof
 
 " Tag shortcuts: either insert fillable tag structure in insert mode, or wrap
 "  selected text with tags in visual mode
+autocmd FileType python noremap <buffer> <LocalLeader>de idef <+1>:<Esc>?<+1><CR>"_ca<
+autocmd FileType python inoremap <buffer> <LocalLeader>de def <+1>:<Esc>?<+1><CR>"_ca<
 
 " Declare end of autocommand group
 augroup END
 " }}}
 " }}}
 " ABBREVIATIONS {{{1 
-iabbrev sig Thank you,<CR>Nate O'Connell<CR>DevOps Engineer
-iabbrev nsig [1]. <++><CR><CR><CR>Thank you,<CR>Nate O'Connell<CR>DevOps Engineer<CR><CR><CR>[1]
-
 " Use the <C-K> digraph functionality to insert the { and } characters without
 "  actually creating the folds in this file: <C-K> (! = { and <C-K> !) = } in
 "  insert mode
