@@ -14,7 +14,7 @@ source $VIMRUNTIME/defaults.vim
 " source for other completion plugins, like Deoplete.
 let g:ale_completion_enabled = 1
 
-" Alwasy show sign column to avoid text jitter
+" Always show sign column to avoid text jitter
 let g:ale_sign_column_always = 1
 
 " Set LSP server or linter if not used by default
@@ -35,9 +35,10 @@ let g:ale_fixers = {
 "   https://github.com/junegunn/vim-plug
 call plug#begin()
 Plug 'hashivim/vim-terraform', { 'for': ['hcl', 'terraform'] }
-Plug 'srcery-colors/srcery-vim'
+Plug 'lifepillar/vim-gruvbox8'
 Plug 'dense-analysis/ale'
 Plug 'preservim/nerdtree'
+Plug 'gergap/vim-ollama'
 call plug#end()
 " }}}
 " FEATURE SETTINGS {{{1 
@@ -78,7 +79,7 @@ set foldmethod=marker
 
 " Use termguicolors if available
 if has('termguicolors')
-  " see ':help 'xterm-true-color' for explanation
+  " see ':help xterm-true-color' for explanation
   let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
   let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
   set termguicolors
@@ -87,11 +88,8 @@ endif
 " Set appropriate text colors for dark background
 set background=dark
 
-" Set colorscheme. This one requires 'srcery-colors/srcery-vim' plugin
-" see ':help srcery' for options
-let g:srcery_italic = 1
-let g:srcery_bg = ['NONE', 'NONE']
-colorscheme srcery
+" Set colorscheme.
+colorscheme gruvbox8
 
 " Turn off search string highlighting
 set nohlsearch
@@ -129,71 +127,6 @@ set statusline+=%4l\ 		" current line 4 char pad
 set statusline+=of		" separator/label
 set statusline+=%4L\ 		" total lines 4 char pad
 set statusline+=(%p%%)		" percentage through file
-" }}}
-" TABLINE {{{1
-set tabline=%!MyTabLine()
-function MyTabLine()
-  let s = '' " complete tabline goes here
-  " loop through each tab page
-  for t in range(tabpagenr('$'))
-    " select the highlighting for the buffer names
-    if t + 1 == tabpagenr()
-      let s .= '%#TabLineSel#'
-    else
-      let s .= '%#TabLine#'
-    endif
-    " empty space
-    let s .= ' '
-    " set the tab page number (for mouse clicks)
-    let s .= '%' . (t + 1) . 'T'
-    " set page number string
-    let s .= t + 1 . ' '
-    " get buffer names and statuses
-    let n = ''  "temp string for buffer names while we loop and check buftype
-    let m = 0 " &modified counter
-    let bc = len(tabpagebuflist(t + 1))  "counter to avoid last ' '
-    " loop through each buffer in a tab
-    for b in tabpagebuflist(t + 1)
-      " buffer types: quickfix gets a [Q], help gets [H]{base fname}
-      " others get 1dir/2dir/3dir/fname shortened to 1/2/3/fname
-      if getbufvar( b, "&buftype" ) == 'help'
-        let n .= '[H]' . fnamemodify( bufname(b), ':t:s/.txt$//' )
-      elseif getbufvar( b, "&buftype" ) == 'quickfix'
-        let n .= '[Q]'
-      else
-        let n .= pathshorten(bufname(b))
-      endif
-      " check and ++ tab's &modified count
-      if getbufvar( b, "&modified" )
-        let m += 1
-      endif
-      " no final ' ' added...formatting looks better done later
-      if bc > 1
-        let n .= ' '
-      endif
-      let bc -= 1
-    endfor
-    " add modified label [n+] where n pages in tab are modified
-    if m > 0
-      let s.= '+ '
-    endif
-    " add buffer names
-    if n == ''
-      let s .= '[No Name]'
-    else
-      let s .= n
-    endif
-    " switch to no underlining and add final space to buffer list
-    let s .= ' '
-  endfor
-  " after the last tab fill with TabLineFill and reset tab page nr
-  let s .= '%#TabLineFill#%T'
-  " right-align the label to close the current tab page
-  if tabpagenr('$') > 1
-    let s .= '%=%#TabLine#%999XX'
-  endif
-  return s
-endfunction
 " }}}
 " KEY REMAPPING {{{1 
 " Set mapleader and localleader keys
@@ -323,8 +256,9 @@ nnoremap <leader>< viw<Esc>a><Esc>bi<<Esc>lel
 vnoremap <leader>< <Esc>`<i<<Esc>`>la><Esc>
 " }}}
 " NERDTree {{{1
-nnoremap <Leader>nt :NERDTree<CR>
+nnoremap <Leader>nt :NERDTreeToggle<CR>
 nnoremap <Leader>nm :NERDTreeMirror<CR>
+nnoremap <Leader>nf :NERDTreeFind<CR>
 " }}}
 " FILETYPE KEYMAPPINGS {{{1 
 " Enable detection of filetypes and load 'ftplugin.vim' and 'indent.vim' in
