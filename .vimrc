@@ -27,6 +27,33 @@ let g:ale_fixers = {
 \   '*': ['remove_trailing_lines', 'trim_whitespace'],
 \   'terraform': ['terraform'],
 \}
+
+" Eclipse config
+function! GetGitRoot()
+  " Execute the git rev-parse command and capture its output
+  let l:git_root = system('git rev-parse --show-toplevel | tr -d "\n"')
+
+  " Check if the command was successful and returned a valid path
+  if v:shell_error == 0 && !empty(l:git_root)
+    return l:git_root
+  else
+    echo "Not inside a Git repository or 'git rev-parse --show-toplevel' failed."
+    return ""
+  endif
+endfunction
+
+function! SetupEclipseAle()
+  " Find the root repo directory
+  let l:repo_root = GetGitRoot()
+
+  " Set buffer local eclipse workspace path to
+  " ~/eclipse_workspace/<name_of_repo>/ to ensure a unique workspace path per
+  " project
+  if !empty(l:repo_root)
+    let l:repo_direname = fnamemodify(l:repo_root, ':t')
+    let b:ale_java_eclipselsp_workspace_path = fnamemodify('~', ':p') . 'eclipse_workspace/' . l:repo_dirname . '/'
+  endif
+endfunction
 " }}}
 " PLUGIN LOADING {{{1
 " Packages stored in ~/.vim/pack
@@ -41,7 +68,7 @@ Plug 'preservim/nerdtree'
 Plug 'gergap/vim-ollama'
 call plug#end()
 " }}}
-" FEATURE SETTINGS {{{1 
+" FEATURE SETTINGS {{{1
 " Yank to clipboard
 if has("clipboard")
   set clipboard=unnamed " copy to the system clipboard
@@ -128,7 +155,7 @@ set statusline+=of		" separator/label
 set statusline+=%4L\ 		" total lines 4 char pad
 set statusline+=(%p%%)		" percentage through file
 " }}}
-" KEY REMAPPING {{{1 
+" KEY REMAPPING {{{1
 " Set mapleader and localleader keys
 let mapleader = ","
 let maplocalleader = ";"
@@ -260,7 +287,7 @@ nnoremap <Leader>nt :NERDTreeToggle<CR>
 nnoremap <Leader>nm :NERDTreeMirror<CR>
 nnoremap <Leader>nf :NERDTreeFind<CR>
 " }}}
-" FILETYPE KEYMAPPINGS {{{1 
+" FILETYPE KEYMAPPINGS {{{1
 " Enable detection of filetypes and load 'ftplugin.vim' and 'indent.vim' in
 "  'runtimepath'
 filetype plugin indent on
@@ -272,7 +299,7 @@ inoremap <localleader><Tab> <Esc>/<++><CR>"_ca<
 vnoremap <localleader><Tab> <Esc>/<++><CR>"_ca<
 
 " BB CODE {{{2
-" Set filetype 
+" Set filetype
 noremap <localleader>bb <Esc>:set filetype=bbcode<CR>
 
 " Group autocommands so that they are not redundantly added every time vimrc
@@ -384,7 +411,7 @@ autocmd FileType markdown onoremap <buffer> ah :<C-U>execute "normal! ?^\[==\|--
 augroup END
 " }}}
 " SERVICENOW {{{2
-" Set filetype 
+" Set filetype
 noremap <localleader>sn <Esc>:set filetype=svcnow<CR>
 
 " Group autocommands so that they are not redundantly added every time vimrc
@@ -401,7 +428,7 @@ autocmd FileType svcnow vnoremap <buffer> <LocalLeader>i <Esc>`>a</em>[/code]<Es
 autocmd FileType svcnow inoremap <buffer> <LocalLeader>B [code]<strong></strong>[/code]<Space><++><Esc>?</e<CR>i
 autocmd FileType svcnow vnoremap <buffer> <LocalLeader>B <Esc>`>a</strong>[/code]<Esc>`<i[code]<strong><Esc>`>
 autocmd FileType svcnow inoremap <buffer> <LocalLeader>p [code]<pre><code></code></pre>[/code]<Space><++><Esc>?</c<CR>i
-autocmd FileType svcnow vnoremap <buffer> <LocalLeader>p <Esc>`>a</code></pre>[/code]<Esc>`<i[code]<pre><code><Esc>`> 
+autocmd FileType svcnow vnoremap <buffer> <LocalLeader>p <Esc>`>a</code></pre>[/code]<Esc>`<i[code]<pre><code><Esc>`>
 
 " Declare end of autocommand group
 augroup END
@@ -598,7 +625,7 @@ autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>kl <+1> = ["<++>"]
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>km <+1> = {<CR><++><CR>}<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>bl <+1> {<CR><++><CR>}<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>de depends_on = [<CR><+1><CR>]<Esc>?<+1><CR>"_ca<
-autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>fo for_each = 
+autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>fo for_each =
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>lo lookup(<+1>, "<++>", <++>)<++><Esc>?<+1><CR>"_ca<
 autocmd FileType hcl,terraform vnoremap <buffer> <LocalLeader>lo xalookup(<+1>, "<+2>", null)<Esc>?<+1><CR>"_ca<<Esc>pvT.xi<BS><ESC>/<+2><CR>"_ca<<Esc>p$
 autocmd FileType hcl,terraform inoremap <buffer> <LocalLeader>tr try(<+1> != null ? <++> : [], <++>)<++><Esc>?<+1><CR>"_ca<
@@ -666,8 +693,31 @@ autocmd FileType python inoremap <buffer> <LocalLeader>de def <+1>:<Esc>?<+1><CR
 " Declare end of autocommand group
 augroup END
 " }}}
+" JAVA {{{2
+" Set filetype
+noremap <localleader>ja <Esc>:set filetype=java<CR>
+
+" Group autocommands so that they are not redundantly added every time vimrc
+"  is sourced
+augroup javagroup
+
+" Clear all previously set autocommands in this group
+au!
+
+" Set up eclipse workspace for java files
+" autocmd BufEnter *.java call SetupEclipseAle()
+
+" Set autotabbing behavior appropriately
+autocmd FileType java setlocal foldmethod=syntax foldlevel=99 noexpandtab shiftwidth=8 softtabstop=0
+
+" Tag shortcuts: either insert fillable tag structure in insert mode, or wrap
+"  selected text with tags in visual mode
+
+" Declare end of autocommand group
+augroup END
 " }}}
-" ABBREVIATIONS {{{1 
+" }}}
+" ABBREVIATIONS {{{1
 " Use the <C-K> digraph functionality to insert the { and } characters without
 "  actually creating the folds in this file: <C-K> (! = { and <C-K> !) = } in
 "  insert mode
